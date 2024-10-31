@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mn.sweeper.gh.com</title>
+  <link rel="stylesheet" href="css/mine.css">
+  <link rel="icon" href="images/yll.png">
+</head>
+<body style="">
+
+<div class="container">
+
+<header>
+  <div class="header">
+      <h4 class="h41">♣ ɱɳ-รωεερ ♣</h4>
+   <div id="jam"></div>
+  </div>
+</header>
+  
+<div id="minesweeper"></div>
+
+<button class="btrf" onclick="location.reload()"> ▶ PLAY AGAIN </button>
+<button class="homebt">
+  <a href="index.html">HOME</a>
+</button>
+
+
+<footer class="footer">
+  <marquee direction="left"><p><strong class="h42">INSTAGRAM @renmikamo.17 || TIKTOK @ren.mikamo17 || INSTAGRAM @renmikamo.17 || TIKTOK @ren.mikamo17 || INSTAGRAM @renmikamo.17 || TIKTOK @ren.mikamo17 || INSTAGRAM @renmikamo.17 || TIKTOK @ren.mikamo17 || INSTAGRAM @renmikamo.17 || TIKTOK @ren.mikamo17 || </strong></p></marquee>
+</footer>
+
+<marquee behavior="scroll" direction="left" scrollamount="100" scrolldelay="100" width="100%"><font color="gold">==============================================</font></marquee>
+<marquee behavior="scroll" direction="right" scrollamount="100" scrolldelay="100" width="100%"><font color="gold">==============================================</font></marquee>
+
+<script>
+  const rows = 10;
+  const cols = 24
+  const minesCount = 34;
+  let minesweeperGrid = [];
+  let gameOver = false;
+
+  function initializeGrid() {
+    for (let i = 0; i < rows; i++) {
+      minesweeperGrid[i] = [];
+      for (let j = 0; j < cols; j++) {
+        minesweeperGrid[i][j] = { mine: false, revealed: false, adjacentMines: 0 };
+      }
+    }
+  }
+
+
+  function placeMines() {
+    let placedMines = 0;
+    while (placedMines < minesCount) {
+      const row = Math.floor(Math.random() * rows);
+      const col = Math.floor(Math.random() * cols);
+      if (!minesweeperGrid[row][col].mine) {
+        minesweeperGrid[row][col].mine = true;
+        placedMines++;
+        updateAdjacentCells(row, col);
+      }
+    }
+  }
+
+  function updateAdjacentCells(row, col) {
+    for (let i = row - 1; i <= row + 1; i++) {
+      for (let j = col - 1; j <= col + 1; j++) {
+        if (i >= 0 && i < rows && j >= 0 && j < cols && !minesweeperGrid[i][j].mine) {
+          minesweeperGrid[i][j].adjacentMines++;
+        }
+      }
+    }
+  }
+
+  function revealCell(row, col) {
+    if (gameOver || minesweeperGrid[row][col].revealed) return;
+
+    const cell = document.getElementById(`cell-${row}-${col}`);
+    minesweeperGrid[row][col].revealed = true;
+    cell.classList.add('revealed');
+
+    if (minesweeperGrid[row][col].mine) {
+      cell.classList.add('mine');
+      alert('KALAH !!! (TERKENA BOM)');
+      gameOver = true;
+      revealAllMines();
+    } else {
+      cell.textContent = minesweeperGrid[row][col].adjacentMines || '';
+      if (minesweeperGrid[row][col].adjacentMines === 0) {
+        revealAdjacentCells(row, col);
+      }
+    }
+  }
+
+  function revealAdjacentCells(row, col) {
+    for (let i = row - 1; i <= row + 1; i++) {
+      for (let j = col - 1; j <= col + 1; j++) {
+        if (i >= 0 && i < rows && j >= 0 && j < cols) {
+          revealCell(i, j);
+        }
+      }
+    }
+  }
+
+  function revealAllMines() {
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (minesweeperGrid[i][j].mine) {
+          const cell = document.getElementById(`cell-${i}-${j}`);
+          cell.classList.add('mine');
+        }
+      }
+    }
+  }
+
+  function createBoard() {
+    const board = document.getElementById('minesweeper');
+    board.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
+    board.style.gridTemplateRows = `repeat(${rows}, 30px)`;
+
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        const cell = document.createElement('div');
+        cell.id = `cell-${i}-${j}`;
+        cell.classList.add('cell');
+        cell.addEventListener('click', () => revealCell(i, j));
+        board.appendChild(cell);
+      }
+    }
+  }
+
+  function startGame() {
+    initializeGrid();
+    placeMines();
+    createBoard();
+  }
+
+  startGame();
+</script>
+
+</div>
+
+</body>
+</html>
